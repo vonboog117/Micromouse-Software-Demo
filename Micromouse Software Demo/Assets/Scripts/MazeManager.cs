@@ -9,6 +9,7 @@ public class MazeManager : MonoBehaviour
     private GameObject latticePrefab;
     [SerializeField]
     private GameObject wallPrefab;
+    private Maze maze;
     
 
     public const float WALL_HEIGHT = 0.05f;
@@ -17,13 +18,7 @@ public class MazeManager : MonoBehaviour
     public const float NODE_WIDTH = 0.18f;
 
     void Start(){
-        //units = new Node[16,16];
-        //units = new Node[]{new Node(0,0,true,false), new Node(0,1,false,false), new Node(1,0,false,false), new Node(1,1,false,true)};
-        //lattices = new Lattice[]{new Lattice(0,0), new Lattice(0,1), new Lattice(1,0), new Lattice(1,1)};
-        //edges = new Edge[]{new Edge(units[0], units[1], true), new Edge(units[0], units[2], true), new Edge(units[1], units[3], true), new Edge(units[2], units[3], true)};
-        
-        Maze maze = new Maze(latticePrefab, wallPrefab);
-
+        maze = new Maze(latticePrefab, wallPrefab);
     }
 
     void Update()
@@ -31,112 +26,21 @@ public class MazeManager : MonoBehaviour
         
     }
 
+    public void GenerateMaze(){
+        maze.ClearMaze();
+        maze.GenerateMaze();
+    }
+
+    public void GeneratePreset(int index){
+        maze.ClearMaze();
+        maze.GeneratePreset(index);
+    }
+
     void OnDrawGizmos(){
         Vector3 nodeSize = new Vector3(PASSAGE_WIDTH, WALL_HEIGHT, PASSAGE_WIDTH);
         Vector3 latticeSize = new Vector3(WALL_WIDTH, WALL_HEIGHT, WALL_WIDTH);
         Vector3 wallSizeA = new Vector3(WALL_WIDTH, WALL_HEIGHT, PASSAGE_WIDTH);
         Vector3 wallSizeB = new Vector3(PASSAGE_WIDTH, WALL_HEIGHT, WALL_WIDTH);
-
-        /*
-        if(units != null){
-            Vector3 nodeAPos = new Vector3(PASSAGE_WIDTH/2 + units[0].x*PASSAGE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + units[0].y*PASSAGE_WIDTH);
-            Vector3 nodeBPos = new Vector3(PASSAGE_WIDTH/2 + units[1].x*PASSAGE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + units[1].y*NODE_WIDTH);
-            Vector3 nodeCPos = new Vector3(NODE_WIDTH/2 + units[2].x*PASSAGE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + units[2].y*PASSAGE_WIDTH);
-            Vector3 nodeDPos = new Vector3(NODE_WIDTH/2 + units[3].x*PASSAGE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + units[3].y*NODE_WIDTH);
-
-            Vector3 latticePos = new Vector3(NODE_WIDTH - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH - WALL_WIDTH/2);
-
-            Vector3 wallPosA = new Vector3(NODE_WIDTH - WALL_WIDTH/2, WALL_HEIGHT/2, PASSAGE_WIDTH/2);
-            Vector3 wallPosB = new Vector3(NODE_WIDTH - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH + PASSAGE_WIDTH/2);
-            Vector3 wallPosC = new Vector3(PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH - WALL_WIDTH/2);
-            Vector3 wallPosD = new Vector3(NODE_WIDTH + PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH - WALL_WIDTH/2);
-
-            Vector3 nodeSizeB = new Vector3(NODE_WIDTH, WALL_HEIGHT, NODE_WIDTH);
-
-
-            Gizmos.color = Color.black;
-            Gizmos.DrawCube(nodeAPos, nodeSize);
-            Gizmos.color = Color.white;
-            Gizmos.DrawCube(nodeBPos, nodeSize);
-            Gizmos.color = Color.blue;
-            Gizmos.DrawCube(nodeCPos, nodeSize);
-            Gizmos.color = Color.green;
-            Gizmos.DrawCube(nodeDPos, nodeSize);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawCube(latticePos, latticeSize);
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawCube(wallPosA, wallSizeA);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawCube(wallPosB, wallSizeA);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawCube(wallPosC, wallSizeB);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawCube(wallPosD, wallSizeB);
-        }
-        */
-
-        /*
-        Vector3 node1Pos = new Vector3(PASSAGE_WIDTH/2 + 0*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 0*PASSAGE_WIDTH);
-
-        Vector3 node2Pos = new Vector3(PASSAGE_WIDTH/2 + 1*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 0*PASSAGE_WIDTH);
-        Vector3 node3Pos = new Vector3(PASSAGE_WIDTH/2 + 2*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 0*PASSAGE_WIDTH);
-        Vector3 node4Pos = new Vector3(PASSAGE_WIDTH/2 + 3*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 0*PASSAGE_WIDTH);
-
-        Vector3 wallPosA = new Vector3(NODE_WIDTH*1 - WALL_WIDTH/2, WALL_HEIGHT/2, PASSAGE_WIDTH/2);
-        Vector3 wallPosB = new Vector3(NODE_WIDTH*2 - WALL_WIDTH/2, WALL_HEIGHT/2, PASSAGE_WIDTH/2);
-        Vector3 wallPosC = new Vector3(NODE_WIDTH*3 - WALL_WIDTH/2, WALL_HEIGHT/2, PASSAGE_WIDTH/2);
-
-        Vector3 node5Pos = new Vector3(PASSAGE_WIDTH/2 + 0*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 1*NODE_WIDTH);
-        Vector3 node6Pos = new Vector3(PASSAGE_WIDTH/2 + 0*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 2*NODE_WIDTH);
-        Vector3 node7Pos = new Vector3(PASSAGE_WIDTH/2 + 0*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + 3*NODE_WIDTH);
-
-        Vector3 wallPosD = new Vector3(PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*1 - WALL_WIDTH/2);
-        Vector3 wallPosE = new Vector3(PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*2 - WALL_WIDTH/2);
-        Vector3 wallPosF = new Vector3(PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*3 - WALL_WIDTH/2);
-
-        Vector3 lattice1Pos = new Vector3(NODE_WIDTH*1 - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*1 - WALL_WIDTH/2);
-        Vector3 lattice2Pos = new Vector3(NODE_WIDTH*2 - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*1 - WALL_WIDTH/2);
-        Vector3 lattice3Pos = new Vector3(NODE_WIDTH*1 - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*2 - WALL_WIDTH/2);
-
-        Gizmos.color = Color.black;
-        Gizmos.DrawCube(node1Pos, nodeSize);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(node2Pos, nodeSize);
-        Gizmos.color = Color.white;
-        Gizmos.DrawCube(node3Pos, nodeSize);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(node4Pos, nodeSize);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosA, wallSizeA);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosB, wallSizeA);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosC, wallSizeA);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(node5Pos, nodeSize);
-        Gizmos.color = Color.white;
-        Gizmos.DrawCube(node6Pos, nodeSize);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(node7Pos, nodeSize);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosD, wallSizeB);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosE, wallSizeB);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawCube(wallPosF, wallSizeB);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(lattice1Pos, latticeSize);
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(lattice2Pos, latticeSize);
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(lattice3Pos, latticeSize);
-        */
         
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 16; y++){
@@ -172,10 +76,6 @@ public class MazeManager : MonoBehaviour
         
     }
 
-    public Lattice[] GetTwoLatticesFromNodes(Node nodeA, Node nodeB){
-        return null; //Place holder
-    }
-
     public class Maze{
         private static Node[,] nodes;
         private static Lattice[,] lattices;
@@ -188,8 +88,8 @@ public class MazeManager : MonoBehaviour
         private static List<Node> visitedNodes;
         private static List<bool> visited;
 
-        private GameObject latticePrefab;
-        private GameObject wallPrefab;
+        private static GameObject latticePrefab;
+        private static GameObject wallPrefab;
 
         public Maze(GameObject lattice, GameObject wall){
             latticePrefab = lattice;
@@ -200,7 +100,6 @@ public class MazeManager : MonoBehaviour
             verticalEdges = new Edge[15,16];
             horizontalEdges = new Edge[16,15];
             adjacencyMatrix = new Dictionary<int, List<int>>();
-            //passages = new List<Edge>();
 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 16; y++){
@@ -212,10 +111,6 @@ public class MazeManager : MonoBehaviour
                         verticalEdges[x-1,y].prefab = wallPrefab;
                         adjacencyMatrix[nodes[x-1,y].index].Add(nodes[x,y].index);
                         adjacencyMatrix[nodes[x,y].index].Add(nodes[x-1,y].index);
-                        //nodes[x-1,y].passages.Add(verticalEdges[x-1,y]);
-                        //nodes[x,y].passages.Add(verticalEdges[x-1,y]);
-                        //passages.Add(verticalEdges[x-1,y]);
-                        //verticalEdges[x-1,y].gameObject = Instantiate(wallPrefab, Edge.GetWallPosition(x-1,y,true), Quaternion.identity);
                     }
 
                     if(y != 0){
@@ -223,10 +118,6 @@ public class MazeManager : MonoBehaviour
                         horizontalEdges[x,y-1].prefab = wallPrefab;
                         adjacencyMatrix[nodes[x,y-1].index].Add(nodes[x,y].index);
                         adjacencyMatrix[nodes[x,y].index].Add(nodes[x,y-1].index);
-                        //nodes[x,y-1].passages.Add(horizontalEdges[x,y-1]);
-                        //nodes[x,y].passages.Add(horizontalEdges[x,y-1]);
-                        //passages.Add(horizontalEdges[x,y-1]);
-                        //horizontalEdges[x,y-1].gameObject = Instantiate(wallPrefab, Edge.GetWallPosition(x,y-1,false), Quaternion.Euler(0,90,0));
                     }
 
                     if(x != 15 && y != 15){
@@ -236,12 +127,44 @@ public class MazeManager : MonoBehaviour
                 }
             }
 
-            //Ensure permenant walls
-
             GenerateMaze();
         }
 
-        public static void GenerateMaze(){
+        public void ClearMaze(){
+            adjacencyMatrix.Clear();
+            for(int x = 0; x < 16; x++){
+                for(int y = 0; y < 16; y++){
+                    adjacencyMatrix.Add(nodes[x,y].index, new List<int>());
+
+                    if(x != 0){
+                        if(verticalEdges[x-1,y].isWall){
+                            Destroy(verticalEdges[x-1,y].gameObject);
+                        }
+                        verticalEdges[x-1,y] = new Edge(nodes[x-1,y], nodes[x,y], x-1, y, false, true);
+                        verticalEdges[x-1,y].prefab = wallPrefab;
+                        adjacencyMatrix[nodes[x-1,y].index].Add(nodes[x,y].index);
+                        adjacencyMatrix[nodes[x,y].index].Add(nodes[x-1,y].index);
+                    }
+
+                    if(y != 0){
+                        if(horizontalEdges[x,y-1].isWall){
+                            Destroy(horizontalEdges[x,y-1].gameObject);
+                        }
+                        horizontalEdges[x,y-1] = new Edge(nodes[x,y-1], nodes[x,y], x, y-1, false, false);
+                        horizontalEdges[x,y-1].prefab = wallPrefab;
+                        adjacencyMatrix[nodes[x,y-1].index].Add(nodes[x,y].index);
+                        adjacencyMatrix[nodes[x,y].index].Add(nodes[x,y-1].index);
+                    }
+
+                    if(x != 15 && y != 15){
+                        lattices[x,y].wallActive = new bool[]{false,false,false,false};
+                        lattices[x,y].numWalls = 0;
+                    }
+                }
+            }
+        }
+
+        public void GenerateMaze(){
             for(int x = 0; x < 15; x++){
                 for(int y = 0; y < 15; y++){
                     //Get numWall 1-4
@@ -277,9 +200,6 @@ public class MazeManager : MonoBehaviour
                             verticalEdges[x,y+1].isWall = true;
                             adjacencyMatrix[verticalEdges[x,y+1].edgeNodes[0].index].Remove(verticalEdges[x,y+1].edgeNodes[1].index);
                             adjacencyMatrix[verticalEdges[x,y+1].edgeNodes[1].index].Remove(verticalEdges[x,y+1].edgeNodes[0].index);
-                            //verticalEdges[x,y+1].edgeNodes[0].passages.Remove(verticalEdges[x,y+1]);
-                            //verticalEdges[x,y+1].edgeNodes[1].passages.Remove(verticalEdges[x,y+1]);
-                            //passages.Remove(verticalEdges[x,y+1]);
                         } else if(newWallIndex == 1){ //South
                             if(y != 0){
                                 lattices[x,y-1].numWalls++;
@@ -289,9 +209,6 @@ public class MazeManager : MonoBehaviour
                             verticalEdges[x,y].isWall = true;
                             adjacencyMatrix[verticalEdges[x,y].edgeNodes[0].index].Remove(verticalEdges[x,y].edgeNodes[1].index);
                             adjacencyMatrix[verticalEdges[x,y].edgeNodes[1].index].Remove(verticalEdges[x,y].edgeNodes[0].index);
-                            //verticalEdges[x,y].edgeNodes[0].passages.Remove(verticalEdges[x,y]);
-                            //verticalEdges[x,y].edgeNodes[1].passages.Remove(verticalEdges[x,y]);
-                            //passages.Remove(verticalEdges[x,y]);
                         } else if(newWallIndex == 2){ //East
                             if(x != 14){
                                 lattices[x+1,y].numWalls++;
@@ -301,9 +218,6 @@ public class MazeManager : MonoBehaviour
                             horizontalEdges[x+1,y].isWall = true;
                             adjacencyMatrix[horizontalEdges[x+1,y].edgeNodes[0].index].Remove(horizontalEdges[x+1,y].edgeNodes[1].index);
                             adjacencyMatrix[horizontalEdges[x+1,y].edgeNodes[1].index].Remove(horizontalEdges[x+1,y].edgeNodes[0].index);
-                            //horizontalEdges[x+1,y].edgeNodes[0].passages.Remove(horizontalEdges[x+1,y]);
-                            //horizontalEdges[x+1,y].edgeNodes[1].passages.Remove(horizontalEdges[x+1,y]);
-                            //passages.Remove(horizontalEdges[x+1,y]);
                         } else if(newWallIndex == 3){ //3  West
                             if(x != 0){
                                 lattices[x-1,y].numWalls++;
@@ -313,9 +227,6 @@ public class MazeManager : MonoBehaviour
                             horizontalEdges[x,y].isWall = true;
                             adjacencyMatrix[horizontalEdges[x,y].edgeNodes[0].index].Remove(horizontalEdges[x,y].edgeNodes[1].index);
                             adjacencyMatrix[horizontalEdges[x,y].edgeNodes[1].index].Remove(horizontalEdges[x,y].edgeNodes[0].index);
-                            //horizontalEdges[x+1,y].edgeNodes[0].passages.Remove(horizontalEdges[x+1,y]);
-                            //horizontalEdges[x+1,y].edgeNodes[1].passages.Remove(horizontalEdges[x+1,y]);
-                            //passages.Remove(horizontalEdges[x,y]);
                         }
 
                         indices.Remove(newWallIndex);
@@ -323,23 +234,33 @@ public class MazeManager : MonoBehaviour
                 }
             }
 
-            //Ensure features
             EnsureFeatures();
-            
-            // for(int x = 0; x < 16; x++){
-            //    for(int y = 0; y < 16; y++){
-            //        Debug.Log(x + " " + y + " " + adjacencyMatrix[nodes[x,y].index].Count);
-            //    }
-            // }
-           
-            //Ensure fully connected
             EnsureConnected();
+        }
+
+        public void GeneratePreset(int index){
+            for(int x = 0; x < 16; x++){
+                for(int y = 0; y < 16; y++){
+                    if(y != 15){
+                        if(MazePreset.APEC_2018_vert[x,y] == 1){
+                            verticalEdges[x,y].gameObject = Instantiate(verticalEdges[x,y].prefab, Edge.GetWallPosition(y,x,true), Quaternion.identity);
+                            verticalEdges[x,y].isWall = true;
+                        }
+                    }
+
+                    if(x != 15){
+                        if(MazePreset.APEC_2018_hor[x,y] == 1){
+                            horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(y,x,false), Quaternion.Euler(0,90,0));
+                            horizontalEdges[x,y].isWall = true;
+                        }
+                    }
+                }
+            }
         }
 
         public static void EnsureConnected(){
 
             visitedNodes = new List<Node>();
-            //List<Edge> traversedPassages = new List<Edge>();
             visited = new List<bool>();
             for(int x = 0; x < 16; x++){
                for(int y = 0; y < 16; y++){
@@ -347,64 +268,27 @@ public class MazeManager : MonoBehaviour
                }
             }
 
-            int count = DFS(0,0);          
+            int count = DFS(15,15);          
 
-            /*
-            Queue<Node> queue = new Queue<Node>();
-            queue.Enqueue(nodes[0,0]);
-            int count = 0;
-            while(queue.Count != 0){
-                Node node = queue.Dequeue();
-                //visited.Add(node);
-                visited[16*node.y + node.x] = true;
-                count++;
-                //Get passages connected to node
-                foreach(Edge passage in node.passages){
-                    //if(!traversedPassages.Contains(passage)){
-                    Node nextNode = passage.edgeNodes[1-passage.NodeInEdge(node)];
-                    if(!visited[16*nextNode.y + nextNode.x]){
-                        int nodeIdx = passage.NodeInEdge(node);
-                        if(nodeIdx != -1 && !passage.isWall){
-                            Debug.Log(passage.x + " " + passage.y + " " + passage.vertical + " " + node.x + " " + node.y + " " + passage.edgeNodes[1 - nodeIdx].x + " " + passage.edgeNodes[1 - nodeIdx].y);
-                            //Add neighboring nodes to queue
-                            queue.Enqueue(nextNode);
-                            //queue.Enqueue(passage.edgeNodes[1 - nodeIdx]);
-                            //traversedPassages.Add(passage);
-                        }
-                    }
-                }
-            }
-            */
-
-            //Debug.Log(count);
-
-            //If visited is not 16x16=256 in length
-                //Remove a wall between visited and unvisited nodes (not needed features)
-                //Recurse
             if(count < 256){
                 List<Edge> visitedEdges = GetVisitedWall();
                 int wallIdx = Random.Range(0,visitedEdges.Count);
                 Destroy(visitedEdges[wallIdx].gameObject);
                 visitedEdges[wallIdx].isWall = false;
-                //lattices[0,0].wallActive[2] = false;
                 adjacencyMatrix[visitedEdges[wallIdx].edgeNodes[0].index].Add(visitedEdges[wallIdx].edgeNodes[1].index);
                 adjacencyMatrix[visitedEdges[wallIdx].edgeNodes[1].index].Add(visitedEdges[wallIdx].edgeNodes[0].index);
                 EnsureConnected();
             }
         }
 
-        //{horizontalEdges[7,6], horizontalEdges[8,6],
-        //verticalEdges[6,7], verticalEdges[8,7],
-        //verticalEdges[6,8], verticalEdges[8,8],
-        //horizontalEdges[7,8], horizontalEdges[8,8]};
-
         public static List<Edge> GetVisitedWall(){
             List<Edge> edges = new List<Edge>();
             Edge[] endEdges = new Edge[]{horizontalEdges[7,6], horizontalEdges[8,6],
                                          verticalEdges[6,7], verticalEdges[8,7],
                                          verticalEdges[6,8], verticalEdges[8,8],
-                                         horizontalEdges[7,8], horizontalEdges[8,8]};
-
+                                         horizontalEdges[7,8], horizontalEdges[8,8],
+                                         verticalEdges[0,0]};
+                                         
             foreach(Node node in visitedNodes){
                 //North
                 if(node.y != 15){
@@ -535,40 +419,24 @@ public class MazeManager : MonoBehaviour
                 if(i == randomNum){
                     if(endEdges[i].isWall){
                         Destroy(endEdges[i].gameObject);
+                        endEdges[i].isWall = false;
                         adjacencyMatrix[endEdges[i].edgeNodes[0].index].Add(endEdges[i].edgeNodes[1].index);
                         adjacencyMatrix[endEdges[i].edgeNodes[1].index].Add(endEdges[i].edgeNodes[0].index);
-                        //endEdges[i].edgeNodes[0].passages.Add(endEdges[i]);
-                        //endEdges[i].edgeNodes[1].passages.Add(endEdges[i]);
-                        //passages.Add(endEdges[i]);
                     }
                 }else{
                     if(!endEdges[i].isWall && endEdges[i].vertical){
                         endEdges[i].gameObject = Instantiate(endEdges[i].prefab, Edge.GetWallPosition(endEdges[i].x,endEdges[i].y,true), Quaternion.identity);
+                        endEdges[i].isWall = true;
                         adjacencyMatrix[endEdges[i].edgeNodes[0].index].Remove(endEdges[i].edgeNodes[1].index);
                         adjacencyMatrix[endEdges[i].edgeNodes[1].index].Remove(endEdges[i].edgeNodes[0].index);
-                        //endEdges[i].edgeNodes[0].passages.Remove(endEdges[i]);
-                        //endEdges[i].edgeNodes[1].passages.Remove(endEdges[i]);
-                        //passages.Remove(endEdges[i]);
                     }else if(!endEdges[i].isWall && !endEdges[i].vertical){
                         endEdges[i].gameObject = Instantiate(endEdges[i].prefab, Edge.GetWallPosition(endEdges[i].x,endEdges[i].y,false), Quaternion.Euler(0,90,0));
+                        endEdges[i].isWall = true;
                         adjacencyMatrix[endEdges[i].edgeNodes[0].index].Remove(endEdges[i].edgeNodes[1].index);
                         adjacencyMatrix[endEdges[i].edgeNodes[1].index].Remove(endEdges[i].edgeNodes[0].index);
-                        //nodes[0,0].passages.Add(horizontalEdges[0,0]);
-                        //nodes[0,0].passages.Add(horizontalEdges[0,0]);
-                        //endEdges[i].edgeNodes[0].passages.Remove(endEdges[i]);
-                        //endEdges[i].edgeNodes[1].passages.Remove(endEdges[i]);
-                        //passages.Remove(endEdges[i]);
                     }
                 }
             }
-        }
-
-        public void AddPassageway(){
-
-        }
-
-        public void RemovePassageway(){
-
         }
 
         public void SetStart(int x, int y){ nodes[x,y].isStart = true; }
