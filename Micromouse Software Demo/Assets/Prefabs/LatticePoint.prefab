@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6788014079764066827}
   - component: {fileID: 2495682308069525111}
   - component: {fileID: 7256320792976238695}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4990100720219604230}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 1967627397126668373}
   - component: {fileID: 7667769236140696790}
   - component: {fileID: 5415096963354666406}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeSouth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 5440441836478162856}
   - component: {fileID: 5794127507248246369}
   - component: {fileID: 2682103142612391089}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeBot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 413428455380216662}
   - component: {fileID: 8814478022639769500}
   - component: {fileID: 1758252402312768063}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeEast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -473,7 +473,7 @@ GameObject:
   - component: {fileID: 8352847615621446695}
   - component: {fileID: 4830891025551424113}
   - component: {fileID: 5722613269081073468}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeWest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -579,7 +579,7 @@ GameObject:
   - component: {fileID: 5444752672536489462}
   - component: {fileID: 3899412600401094211}
   - component: {fileID: 2991052098485585938}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LatticeNorth
   m_TagString: Untagged
   m_Icon: {fileID: 0}

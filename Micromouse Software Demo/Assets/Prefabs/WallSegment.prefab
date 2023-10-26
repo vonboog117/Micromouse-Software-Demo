@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 1791202283079312138}
   - component: {fileID: 2864688960257994236}
   - component: {fileID: 4121003415581068570}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallNorth
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,9 +118,9 @@ GameObject:
   - component: {fileID: 199438691896454333}
   - component: {fileID: 7815080995523380374}
   - component: {fileID: 4869125326898464356}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSouth
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -221,9 +221,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2386845424720755164}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSegment
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -261,9 +261,9 @@ GameObject:
   - component: {fileID: 1254079640374291918}
   - component: {fileID: 277430468378294216}
   - component: {fileID: 3410839664730375651}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallEast
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -367,9 +367,9 @@ GameObject:
   - component: {fileID: 4209698392838694380}
   - component: {fileID: 1961130060071373984}
   - component: {fileID: 5204326721526658810}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallBot
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -473,9 +473,9 @@ GameObject:
   - component: {fileID: 2584709430299623880}
   - component: {fileID: 4551024848249857778}
   - component: {fileID: 7294786846622094930}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallWest
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -579,9 +579,9 @@ GameObject:
   - component: {fileID: 7286202919278359189}
   - component: {fileID: 7791549834903001066}
   - component: {fileID: 1469454063430828076}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallTop
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

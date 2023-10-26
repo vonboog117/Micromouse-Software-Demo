@@ -10,6 +10,7 @@ public class MazeManager : MonoBehaviour
     [SerializeField]
     private GameObject wallPrefab;
     private Maze maze;
+    private bool mouseVision = false;
     
 
     public const float WALL_HEIGHT = 0.05f;
@@ -34,6 +35,19 @@ public class MazeManager : MonoBehaviour
     public void GeneratePreset(int index){
         maze.ClearMaze();
         maze.GeneratePreset(index);
+    }
+
+    public void ToggleMouseVision(){
+        for(int i = 0; i < 15*16; i++){
+            if(mouseVision){
+                maze.EnableWallRenderer(i % 15, i / 15, true);
+                maze.EnableWallRenderer(i % 16, i / 16, false);
+            }else{
+                maze.DisableWallRenderer(i % 15, i / 15, true);
+                maze.DisableWallRenderer(i % 16, i / 16, false);
+            }
+        }
+        mouseVision = !mouseVision;
     }
 
     void OnDrawGizmos(){
@@ -142,6 +156,7 @@ public class MazeManager : MonoBehaviour
                         }
                         verticalEdges[x-1,y] = new Edge(nodes[x-1,y], nodes[x,y], x-1, y, false, true);
                         verticalEdges[x-1,y].prefab = wallPrefab;
+                        verticalEdges[x-1,y].found = false;
                         adjacencyMatrix[nodes[x-1,y].index].Add(nodes[x,y].index);
                         adjacencyMatrix[nodes[x,y].index].Add(nodes[x-1,y].index);
                     }
@@ -152,6 +167,7 @@ public class MazeManager : MonoBehaviour
                         }
                         horizontalEdges[x,y-1] = new Edge(nodes[x,y-1], nodes[x,y], x, y-1, false, false);
                         horizontalEdges[x,y-1].prefab = wallPrefab;
+                        horizontalEdges[x,y-1].found = false;
                         adjacencyMatrix[nodes[x,y-1].index].Add(nodes[x,y].index);
                         adjacencyMatrix[nodes[x,y].index].Add(nodes[x,y-1].index);
                     }
@@ -239,21 +255,63 @@ public class MazeManager : MonoBehaviour
         }
 
         public void GeneratePreset(int index){
-            for(int x = 0; x < 16; x++){
-                for(int y = 0; y < 16; y++){
-                    if(y != 15){
-                        if(MazePreset.APEC_2018_vert[x,y] == 1){
-                            verticalEdges[x,y].gameObject = Instantiate(verticalEdges[x,y].prefab, Edge.GetWallPosition(y,x,true), Quaternion.identity);
-                            verticalEdges[x,y].isWall = true;
+            if(index == 0){
+                ClearMaze();
+            }else{
+                for(int x = 0; x < 16; x++){
+                    for(int y = 0; y < 16; y++){
+                        if(x != 15){
+                            if(index == 1 && MazePreset.APEC_2018_vert[y,x] == 1){
+                                verticalEdges[x,y].gameObject = Instantiate(verticalEdges[x,y].prefab, Edge.GetWallPosition(x,y,true), Quaternion.identity);
+                                verticalEdges[x,y].isWall = true;
+                            }else if(index == 2 && MazePreset.JAPAN_2017_vert[y,x] == 1){
+                                verticalEdges[x,y].gameObject = Instantiate(verticalEdges[x,y].prefab, Edge.GetWallPosition(x,y,true), Quaternion.identity);
+                                verticalEdges[x,y].isWall = true;
+                            }
                         }
-                    }
 
-                    if(x != 15){
-                        if(MazePreset.APEC_2018_hor[x,y] == 1){
-                            horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(y,x,false), Quaternion.Euler(0,90,0));
-                            horizontalEdges[x,y].isWall = true;
+                        if(y != 15){
+                            if(index == 1 && MazePreset.APEC_2018_hor[y,x] == 1){
+                                horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(x,y,false), Quaternion.Euler(0,90,0));
+                                horizontalEdges[x,y].isWall = true;
+                            }else if(index == 2 && MazePreset.JAPAN_2017_hor[y,x] == 1){
+                                horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(x,y,false), Quaternion.Euler(0,90,0));
+                                horizontalEdges[x,y].isWall = true;
+                            }
                         }
                     }
+                }
+            }
+        }
+
+        public void DisableWallRenderer(int x, int y, bool vertical){
+            if(vertical){
+                if(verticalEdges[x,y].isWall && !verticalEdges[x,y].found){
+                    foreach(MeshRenderer renderer in verticalEdges[x,y].gameObject.GetComponentsInChildren<MeshRenderer>()){
+                        renderer.enabled = false;
+                    }
+                }
+            }else{
+                if(horizontalEdges[x,y].isWall && !horizontalEdges[x,y].found){
+                    foreach(MeshRenderer renderer in horizontalEdges[x,y].gameObject.GetComponentsInChildren<MeshRenderer>()){
+                        renderer.enabled = false;
+                    }
+                }
+            }
+        }
+
+        public void EnableWallRenderer(int x, int y, bool vertical){
+            if(vertical){
+                if(verticalEdges[x,y].isWall){
+                    foreach(MeshRenderer renderer in verticalEdges[x,y].gameObject.GetComponentsInChildren<MeshRenderer>()){
+                        renderer.enabled = true;
+                    }
+                }
+            }else{
+                if(horizontalEdges[x,y].isWall){
+                    foreach(MeshRenderer renderer in horizontalEdges[x,y].gameObject.GetComponentsInChildren<MeshRenderer>()){
+                        renderer.enabled = true;
+                    }   
                 }
             }
         }
@@ -439,6 +497,14 @@ public class MazeManager : MonoBehaviour
             }
         }
 
+        public static void SetFound(int x, int y, bool vertical, bool f){
+            if(vertical){
+                verticalEdges[x,y].found = f;
+            }else{
+                horizontalEdges[x,y].found = f;
+            }
+        }
+
         public void SetStart(int x, int y){ nodes[x,y].isStart = true; }
 
         public void SetEnd(int x, int y){ nodes[x,y].isEnd = true; }
@@ -521,6 +587,7 @@ public class MazeManager : MonoBehaviour
     public class Edge{
         public bool isWall;
         public bool vertical;
+        public bool found;
         public int x;
         public int y;
         public Node[] edgeNodes;
@@ -536,6 +603,7 @@ public class MazeManager : MonoBehaviour
             y = _y;
             isWall = wall;
             vertical = vert;
+            found = false;
         }
 
         public Edge(){
@@ -548,6 +616,21 @@ public class MazeManager : MonoBehaviour
             }else{
                 return new Vector3(NODE_WIDTH*x + PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*(y+1) - WALL_WIDTH/2);
             }
+        }
+
+        public static Vector3 GetWallIndex(Vector3 position, Quaternion rotation){
+            if(rotation == Quaternion.identity){
+                //Debug.Log((((position.x + WALL_WIDTH/2) / NODE_WIDTH) - 1) + " " + ((position.z + PASSAGE_WIDTH/2) / NODE_WIDTH));
+                return new Vector3(Mathf.RoundToInt(((position.x + WALL_WIDTH/2) / NODE_WIDTH) - 1), (int)((position.z + PASSAGE_WIDTH/2) / NODE_WIDTH), 1);
+            }else{
+                //Debug.Log(((position.x + PASSAGE_WIDTH/2) / NODE_WIDTH) + " " + (((position.z + WALL_WIDTH/2) / NODE_WIDTH)-1));
+                return new Vector3((int)((position.x + PASSAGE_WIDTH/2) / NODE_WIDTH), Mathf.RoundToInt(((position.z + WALL_WIDTH/2) / NODE_WIDTH)-1), 0);
+            }
+            // if(vertical){
+            //     return new Vector3(NODE_WIDTH*(x+1) - WALL_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*y + PASSAGE_WIDTH/2);
+            // }else{
+            //     return new Vector3(NODE_WIDTH*x + PASSAGE_WIDTH/2, WALL_HEIGHT/2, NODE_WIDTH*(y+1) - WALL_WIDTH/2);
+            // }
         }
 
         //Only returns true if the nodes are immediate neighbors
