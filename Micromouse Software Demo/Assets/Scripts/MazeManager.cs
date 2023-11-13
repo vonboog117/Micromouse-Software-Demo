@@ -9,7 +9,7 @@ public class MazeManager : MonoBehaviour
     private GameObject latticePrefab;
     [SerializeField]
     private GameObject wallPrefab;
-    private Maze maze;
+    public static Maze maze;
     private bool mouseVision = false;
     
 
@@ -30,11 +30,31 @@ public class MazeManager : MonoBehaviour
     public void GenerateMaze(){
         maze.ClearMaze();
         maze.GenerateMaze();
+
+        for(int i = 0; i < 15*16; i++){
+            if(!mouseVision){
+                maze.EnableWallRenderer(i % 15, i / 15, true);
+                maze.EnableWallRenderer(i % 16, i / 16, false);
+            }else{
+                maze.DisableWallRenderer(i % 15, i / 15, true);
+                maze.DisableWallRenderer(i % 16, i / 16, false);
+            }
+        }
     }
 
     public void GeneratePreset(int index){
         maze.ClearMaze();
         maze.GeneratePreset(index);
+
+        for(int i = 0; i < 15*16; i++){
+            if(!mouseVision){
+                maze.EnableWallRenderer(i % 15, i / 15, true);
+                maze.EnableWallRenderer(i % 16, i / 16, false);
+            }else{
+                maze.DisableWallRenderer(i % 15, i / 15, true);
+                maze.DisableWallRenderer(i % 16, i / 16, false);
+            }
+        }
     }
 
     public void ToggleMouseVision(){
@@ -235,14 +255,16 @@ public class MazeManager : MonoBehaviour
                             adjacencyMatrix[horizontalEdges[x+1,y].edgeNodes[0].index].Remove(horizontalEdges[x+1,y].edgeNodes[1].index);
                             adjacencyMatrix[horizontalEdges[x+1,y].edgeNodes[1].index].Remove(horizontalEdges[x+1,y].edgeNodes[0].index);
                         } else if(newWallIndex == 3){ //3  West
-                            if(x != 0){
-                                lattices[x-1,y].numWalls++;
-                                lattices[x-1,y].wallActive[2] = true;
+                            if(!(x == 0 && y == 0)){ // Don't even consider adding horizontalEdges[0,0]
+                                if(x != 0){
+                                    lattices[x-1,y].numWalls++;
+                                    lattices[x-1,y].wallActive[2] = true;
+                                }
+                                horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(x,y,false), Quaternion.Euler(0,90,0));
+                                horizontalEdges[x,y].isWall = true;
+                                adjacencyMatrix[horizontalEdges[x,y].edgeNodes[0].index].Remove(horizontalEdges[x,y].edgeNodes[1].index);
+                                adjacencyMatrix[horizontalEdges[x,y].edgeNodes[1].index].Remove(horizontalEdges[x,y].edgeNodes[0].index);
                             }
-                            horizontalEdges[x,y].gameObject = Instantiate(horizontalEdges[x,y].prefab, Edge.GetWallPosition(x,y,false), Quaternion.Euler(0,90,0));
-                            horizontalEdges[x,y].isWall = true;
-                            adjacencyMatrix[horizontalEdges[x,y].edgeNodes[0].index].Remove(horizontalEdges[x,y].edgeNodes[1].index);
-                            adjacencyMatrix[horizontalEdges[x,y].edgeNodes[1].index].Remove(horizontalEdges[x,y].edgeNodes[0].index);
                         }
 
                         indices.Remove(newWallIndex);
@@ -497,11 +519,22 @@ public class MazeManager : MonoBehaviour
             }
         }
 
-        public static void SetFound(int x, int y, bool vertical, bool f){
+        public void SetFound(int x, int y, bool vertical, bool f){
             if(vertical){
                 verticalEdges[x,y].found = f;
             }else{
                 horizontalEdges[x,y].found = f;
+            }
+            //Debug.Log("Here");
+            //int[,] values = new int[16,16];
+            //UIManager.UpdateText(values);
+        }
+        
+        public bool GetFound(int x, int y, bool vertical){
+            if(vertical){
+                return verticalEdges[x,y].found;
+            }else{
+                return horizontalEdges[x,y].found;
             }
         }
 
@@ -547,6 +580,10 @@ public class MazeManager : MonoBehaviour
 
         public static Vector3 GetUnitPosition(int x, int y){
             return new Vector3(PASSAGE_WIDTH/2 + x*NODE_WIDTH, WALL_HEIGHT/2, PASSAGE_WIDTH/2 + y*NODE_WIDTH);
+        }
+
+        public static Vector2 GetUnitCoords(Vector3 pos){
+            return new Vector2(pos.x/NODE_WIDTH, pos.z/NODE_WIDTH);
         }
 
         public static int[] GetCoordFromIndex(int idx){
