@@ -25,6 +25,7 @@ public class MouseController : MonoBehaviour
     private int orientation;
     private Vector2 mouseCoords;
     private Vector2 nextCoords;
+    private Vector2 targetCoords;
     private Vector3 nextPos;
 
 
@@ -34,6 +35,7 @@ public class MouseController : MonoBehaviour
         mouseState = State.Idle;
         orientation = 0;
         nextCoords = new Vector2(-1,-1);
+        targetCoords = new Vector2(7,7);
     }
 
     // Update is called once per frame
@@ -60,10 +62,6 @@ public class MouseController : MonoBehaviour
             appearance.transform.rotation = Quaternion.Euler(0f,180f,0f);
         }
 
-        // if(mouseState == State.Manual){
-        //     velocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-        // }
-
         Vector3 rayOrigin = transform.position;
         RaycastHit hit;
         int layerMask = 1 << 3;
@@ -80,23 +78,34 @@ public class MouseController : MonoBehaviour
             HandleWallHit(hit);
         }
 
-        if((int)nextCoords.x > (int)mouseCoords.x && (int)nextCoords.y == (int)mouseCoords.y){
-           // Debug.Log("Right");
-        }else if((int)nextCoords.x < (int)mouseCoords.x && (int)nextCoords.y == (int)mouseCoords.y){
-           // Debug.Log("Left");
-        }else if((int)nextCoords.x == (int)mouseCoords.x && (int)nextCoords.y > (int)mouseCoords.y){
-            //Debug.Log("Up");
-        }else if((int)nextCoords.x == (int)mouseCoords.x && (int)nextCoords.y < (int)mouseCoords.y){
-            //Debug.Log("Down");
+        // if((int)nextCoords.x > (int)mouseCoords.x && (int)nextCoords.y == (int)mouseCoords.y){
+        //    // Debug.Log("Right");
+        // }else if((int)nextCoords.x < (int)mouseCoords.x && (int)nextCoords.y == (int)mouseCoords.y){
+        //    // Debug.Log("Left");
+        // }else if((int)nextCoords.x == (int)mouseCoords.x && (int)nextCoords.y > (int)mouseCoords.y){
+        //     //Debug.Log("Up");
+        // }else if((int)nextCoords.x == (int)mouseCoords.x && (int)nextCoords.y < (int)mouseCoords.y){
+        //     //Debug.Log("Down");
+        // }
+
+        if(((int)mouseCoords.x == 7 && (int)mouseCoords.y == 7 && (mouseState == State.Find || mouseState == State.Race)) ||
+           ((int)mouseCoords.x == 7 && (int)mouseCoords.y == 8 && (mouseState == State.Find || mouseState == State.Race)) ||
+           ((int)mouseCoords.x == 8 && (int)mouseCoords.y == 7 && (mouseState == State.Find || mouseState == State.Race)) ||
+           ((int)mouseCoords.x == 8 && (int)mouseCoords.y == 8 && (mouseState == State.Find || mouseState == State.Race))){
+            HandleEndFound();
         }
-        //Debug.Log((int)nextCoords.x + " " + (int)nextCoords.y + " cur " + (int)mouseCoords.x + " " + (int)mouseCoords.y);
+
+        if((int)mouseCoords.x == 0 && (int)mouseCoords.y == 0 && mouseState == State.Return){
+            if(Mathf.Abs(transform.position.x - nextPos.x) <= COORD_DIF && Mathf.Abs(transform.position.z - nextPos.z) <= COORD_DIF){
+                mouseState = State.Idle;
+                UIManager.MouseStateIdle();
+            }
+        }
     }
 
     void FixedUpdate(){
         switch(mouseState){
             case State.Manual:
-                //nextCoords = GetNextCoords();
-                //Vector3 nextPos = MazeManager.Node.GetUnitPosition((int)nextCoords.x, (int)nextCoords.y);
                 velocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
                 rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
                 break;
@@ -106,30 +115,31 @@ public class MouseController : MonoBehaviour
                 MoveToNextUnit();
                 break;
             case State.Return:
+                MoveToNextUnit();
                 break;
             case State.Race:
+                MoveToNextUnit();
+                UIManager.ChangeTextColor((int)mouseCoords.x,(int)mouseCoords.y);
                 break;
         }
     }
 
     private void MoveToNextUnit(){
         if(((int)mouseCoords.x == 0 && (int)mouseCoords.y == 0 && nextCoords.x == -1) ||
-        //   (Mathf.Abs(mouseCoords.x - nextCoords.x) <= COORD_DIF && Mathf.Abs(mouseCoords.y - nextCoords.y) <= COORD_DIF)){
             (Mathf.Abs(transform.position.x - nextPos.x) <= COORD_DIF && Mathf.Abs(transform.position.z - nextPos.z) <= COORD_DIF)){
             nextCoords = GetNextCoords();
             nextPos = MazeManager.Node.GetUnitPosition((int)nextCoords.x, (int)nextCoords.y);
             velocity = new Vector3(nextPos.x - transform.position.x, 0, nextPos.z - transform.position.z).normalized;
-            Debug.Log(nextCoords + " " + nextPos + " "+ mouseCoords + " " + velocity);
+            maze.markTraversed(16 * (int)mouseCoords.y + (int)mouseCoords.x, 16 * (int)nextCoords.y + (int)nextCoords.x);
         }
-        //velocity = new Vector3(nextCoords.x - mouseCoords.x, 0, nextCoords.y - mouseCoords.y).normalized;
-        //Debug.Log(nextCoords + " " + mouseCoords + " " + velocity);
         rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
-        //Debug.Log(velocity);
     }
 
     public void ResetMazeMemory(){
         gameObject.transform.position = new Vector3(0.07f, 0.02f, 0.0721f);
+        nextCoords.x = -1;
         maze.ResetMaze();
+        UIManager.ResetTextColors();
     }
 
     public void ChangeMouseState(int newState){
@@ -138,10 +148,19 @@ public class MouseController : MonoBehaviour
             else{ mouseState = State.Manual; }
         }else if(newState == 1){
             mouseState = State.Find;
+            targetCoords.x = 7;
+            targetCoords.y = 7;
+            maze.FloodFill((int)targetCoords.x, (int)targetCoords.y);
         }else if(newState == 2){
             mouseState = State.Return;
+            targetCoords.x = 0;
+            targetCoords.y = 0;
+            maze.FloodFill((int)targetCoords.x, (int)targetCoords.y);
         }else if(newState == 3){
             mouseState = State.Race;
+            targetCoords.x = 7;
+            targetCoords.y = 7;
+            maze.FloodFill((int)targetCoords.x, (int)targetCoords.y);
         }
     }
 
@@ -176,7 +195,7 @@ public class MouseController : MonoBehaviour
             }else{
                 maze.removeEdge(idxA, idxA + 16);
             }
-            maze.FloodFill(7,7);
+            maze.FloodFill((int)targetCoords.x, (int)targetCoords.y);
         }
         if(!hit.collider.gameObject.GetComponent<MeshRenderer>().enabled){
             GameObject wall = hit.collider.gameObject.transform.parent.gameObject;
@@ -186,21 +205,60 @@ public class MouseController : MonoBehaviour
         }
     }
 
+    public void HandleEndFound(){
+        if(Mathf.Abs(transform.position.x - nextPos.x) <= COORD_DIF && Mathf.Abs(transform.position.z - nextPos.z) <= COORD_DIF){
+            mouseState = State.Idle;
+            UIManager.MouseStateIdle();
+        }
+
+        maze.removeEdge(16*6+7, 16*7+7);
+        maze.removeEdge(16*7+6, 16*7+7);
+        maze.removeEdge(16*6+8, 16*7+8);
+        maze.removeEdge(16*7+9, 16*7+8);
+        maze.removeEdge(16*9+7, 16*8+7);
+        maze.removeEdge(16*8+6, 16*8+7);
+        maze.removeEdge(16*9+8, 16*8+8);
+        maze.removeEdge(16*8+9, 16*8+8);
+
+        MazeManager.maze.SetFound(7, 6, false, true);
+        MazeManager.maze.SetFound(8, 6, false, true);
+        MazeManager.maze.SetFound(7, 8, false, true);
+        MazeManager.maze.SetFound(8, 8, false, true);
+        MazeManager.maze.SetFound(6, 7, true, true);
+        MazeManager.maze.SetFound(8, 7, true, true);
+        MazeManager.maze.SetFound(6, 8, true, true);
+        MazeManager.maze.SetFound(8, 8, true, true);
+
+        MazeManager.EnableMazeWall(7, 6, false);
+        MazeManager.EnableMazeWall(8, 6, false);
+        MazeManager.EnableMazeWall(7, 8, false);
+        MazeManager.EnableMazeWall(8, 8, false);
+        MazeManager.EnableMazeWall(6, 7, true);
+        MazeManager.EnableMazeWall(8, 7, true);
+        MazeManager.EnableMazeWall(6, 8, true);
+        MazeManager.EnableMazeWall(8, 8, true);
+
+        maze.FloodFill((int)targetCoords.x, (int)targetCoords.y);
+    }
+
     public class Maze{
         public Node[,] nodes;
         public Dictionary<int, List<Edge>> edges;
         public Dictionary<int, List<int>> adjMatrix;
+        public Dictionary<int, List<int>> traversedEdges;
 
         public Maze(){
             nodes = new Node[16,16];
             edges = new Dictionary<int, List<Edge>>();
             adjMatrix = new Dictionary<int, List<int>>();
+            traversedEdges = new Dictionary<int, List<int>>();
 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 16; y++){
                     nodes[x,y] = new Node(x,y,0);
                     edges.Add(nodes[x,y].index, new List<Edge>());
                     adjMatrix.Add(nodes[x,y].index, new List<int>());
+                    traversedEdges.Add(nodes[x,y].index, new List<int>());
                     if(x != 0){ addEdge(nodes[x,y], nodes[x-1,y]); }
                     if(y != 0){ addEdge(nodes[x,y], nodes[x,y-1]); }
                 }
@@ -211,11 +269,13 @@ public class MouseController : MonoBehaviour
         public void ResetMaze(){
             edges = new Dictionary<int, List<Edge>>();
             adjMatrix = new Dictionary<int, List<int>>();
+            traversedEdges = new Dictionary<int, List<int>>();
 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 16; y++){
                     edges.Add(nodes[x,y].index, new List<Edge>());
                     adjMatrix.Add(nodes[x,y].index, new List<int>());
+                    traversedEdges.Add(nodes[x,y].index, new List<int>());
                     if(x != 0){ addEdge(nodes[x,y], nodes[x-1,y]); }
                     if(y != 0){ addEdge(nodes[x,y], nodes[x,y-1]); }
                 }
@@ -238,9 +298,14 @@ public class MouseController : MonoBehaviour
                 queue.Enqueue(nodes[7,8]);
                 queue.Enqueue(nodes[8,7]);
                 queue.Enqueue(nodes[8,8]);
+                UIManager.UpdateText(7,7,nodes[7,7].value);
+                UIManager.UpdateText(7,8,nodes[7,8].value);
+                UIManager.UpdateText(8,7,nodes[8,7].value);
+                UIManager.UpdateText(8,8,nodes[8,8].value);
             }else{
                 nodes[x_idx, y_idx].value = 0;
                 queue.Enqueue(nodes[x_idx, y_idx]);
+                UIManager.UpdateText(x_idx, y_idx,nodes[x_idx, y_idx].value);
             }
 
             while(queue.Count != 0){
@@ -275,9 +340,19 @@ public class MouseController : MonoBehaviour
             Node nodeA = nodes[nodeIdxA % 16, nodeIdxA / 16];
             Node nodeB = nodes[nodeIdxB % 16, nodeIdxB / 16];
 
-            if(adjMatrix[nodeA.index].Contains(nodeB.index)){
+            if(adjMatrix[nodeA.index].Contains(nodeB.index) && !traversedEdges[nodeA.index].Contains(nodeB.index)){
                 adjMatrix[nodeA.index].Remove(nodeB.index);
                 adjMatrix[nodeB.index].Remove(nodeA.index);
+            }
+        }
+
+        public void markTraversed(int nodeIdxA, int nodeIdxB){
+            Node nodeA = nodes[nodeIdxA % 16, nodeIdxA / 16];
+            Node nodeB = nodes[nodeIdxB % 16, nodeIdxB / 16];
+
+            if(adjMatrix[nodeA.index].Contains(nodeB.index) && !traversedEdges[nodeA.index].Contains(nodeB.index)){
+                traversedEdges[nodeA.index].Add(nodeB.index);
+                traversedEdges[nodeB.index].Add(nodeA.index);
             }
         }
 
@@ -315,11 +390,13 @@ public class MouseController : MonoBehaviour
 
         public struct Edge{
             public Node[] nodes;
+            public bool traversed;
 
             public Edge(Node nodeA, Node nodeB){
                 nodes = new Node[2];
                 nodes[0] = nodeA;
                 nodes[1] = nodeB;
+                traversed = false;
             }
         }
     }

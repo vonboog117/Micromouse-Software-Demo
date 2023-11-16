@@ -3352,9 +3352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textPrefab: {fileID: 4959403192472377238, guid: 8f8d331c7c6ac9948a0f90ff925a84c6, type: 3}
   MazeCanvas: {fileID: 749010328}
-  FindButton: {fileID: 1315451747}
-  ReturnButton: {fileID: 522147525}
-  RaceButton: {fileID: 2052318645}
+  UICanvas: {fileID: 50471734}
 --- !u!1 &1298368686
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,17 +10,28 @@ public class UIManager : MonoBehaviour
     public GameObject textPrefab;
 
     public GameObject MazeCanvas;
-    public Button FindButton;
-    public Button ReturnButton;
-    public Button RaceButton;
+    public GameObject UICanvas;
+    private static Button FindButton;
+    private static Button ReturnButton;
+    private static Button RaceButton;
 
     private static GameObject[,] nodeTexts = new GameObject[16,16];
+    private static Color pathColor = new Color(0f, 255f, 0f);
+    private static Color normColor;
     private bool textActive = false;
     private bool isManual = false;
     //private static int count = 0;
 
     void Start(){
         InstantiateText();
+
+        Transform MouseControls = UICanvas.transform.GetChild(2);
+        FindButton = MouseControls.GetChild(1).gameObject.GetComponent<Button>();
+        ReturnButton = MouseControls.GetChild(2).gameObject.GetComponent<Button>();
+        RaceButton = MouseControls.GetChild(3).gameObject.GetComponent<Button>();
+        
+        normColor = textPrefab.GetComponent<TextMeshProUGUI>().color;
+        pathColor.a = normColor.a;
     }
 
     private void InstantiateText(){
@@ -50,6 +61,18 @@ public class UIManager : MonoBehaviour
         nodeTexts[x,y].GetComponent<TextMeshProUGUI>().SetText(values.ToString());
     }
 
+    public static void ChangeTextColor(int x, int y){
+        nodeTexts[x,y].GetComponent<TextMeshProUGUI>().color = pathColor;
+    }
+
+    public static void ResetTextColors(){
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 16; y++){
+                nodeTexts[x,y].GetComponent<TextMeshProUGUI>().color = normColor;
+            }
+        }
+    }
+
     public void ToggleTextActive(){
         textActive = !textActive;
 
@@ -58,6 +81,12 @@ public class UIManager : MonoBehaviour
                 nodeTexts[x,y].SetActive(textActive);
             }
         }
+    }
+
+    public static void MouseStateIdle(){
+        FindButton.interactable = true;
+        ReturnButton.interactable = true;
+        RaceButton.interactable = true;
     }
 
     public void ChangeStateButtons(int state){

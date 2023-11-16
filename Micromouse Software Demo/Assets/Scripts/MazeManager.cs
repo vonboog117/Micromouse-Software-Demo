@@ -70,6 +70,10 @@ public class MazeManager : MonoBehaviour
         mouseVision = !mouseVision;
     }
 
+    public static void EnableMazeWall(int x, int y, bool vertical){
+        maze.EnableWallRenderer(x,y,vertical);
+    }
+
     void OnDrawGizmos(){
         Vector3 nodeSize = new Vector3(PASSAGE_WIDTH, WALL_HEIGHT, PASSAGE_WIDTH);
         Vector3 latticeSize = new Vector3(WALL_WIDTH, WALL_HEIGHT, WALL_WIDTH);
